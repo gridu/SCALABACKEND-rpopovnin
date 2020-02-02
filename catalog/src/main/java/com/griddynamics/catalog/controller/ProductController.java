@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,6 +26,16 @@ public class ProductController {
     @GetMapping("/sku/{sku}")
     private List<ProductEntity> getProductListBySku(@PathVariable String sku) {
         return productService.getProductListBySku(sku);
+    }
+
+    @GetMapping("/ids")
+    private List<String> getIds() {
+        List<String> ids = new ArrayList<>();
+        ids.add("dfdf");
+        ids.add("dfdf");
+        ids.add("dfdf");
+
+        return ids;
     }
 
 }

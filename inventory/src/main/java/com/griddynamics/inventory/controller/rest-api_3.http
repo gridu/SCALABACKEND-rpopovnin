@@ -1,0 +1,13 @@
+POST http://localhost:8282/api/inventory/
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+[
+  "b6c0b6bea69c722939585baeac73c13d",
+  "93e5272c51d8cce02597e3ce67b7ad0a",
+  "013e320f2f2ec0cf5b3ff5418d688528"
+]
+
+###
+

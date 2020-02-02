@@ -1,0 +1,6 @@
+GET http://localhost:8181/api/products/id/b6c0b6bea69c722939585baeac73c13d?=
+Accept: */*
+Cache-Control: no-cache
+
+###
+
