@@ -1,4 +1,4 @@
-package com.griddynamics.product.model;
+package com.griddynamics.product.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
