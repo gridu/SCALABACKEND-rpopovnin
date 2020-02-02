@@ -27,8 +27,8 @@ import static java.util.stream.Collectors.toMap;
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private static final String CATALOG_API_PATH = "http://localhost:8181/api/catalog/products";
-    private static final String INVENTORY_API_PATH = "http://localhost:8282/api/inventory";
+    private static final String CATALOG_API_PATH = "http://catalog-service/api/catalog/products";
+    private static final String INVENTORY_API_PATH = "http://inventory-service/api/inventory";
 
     private final RestTemplate restTemplate;
 
