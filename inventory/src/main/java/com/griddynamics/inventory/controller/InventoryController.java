@@ -18,7 +18,7 @@ public class InventoryController {
 
     private final InventoryService inventoryService;
 
-    @PostMapping(value = "/",
+    @PostMapping(value = "",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     private List<ProductEntity> getInventoryProductDataByUniqIdList(@RequestBody List<String> uniqIds) {
