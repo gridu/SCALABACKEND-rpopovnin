@@ -27,8 +27,8 @@ import static java.util.stream.Collectors.toMap;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductService {
-    private static final String CATALOG_API_PATH = "http://catalog-service/api/catalog/products";
-    private static final String INVENTORY_API_PATH = "http://inventory-service/api/inventory";
+    private static final String CATALOG_API_PATH = "http://catalog-service/catalog/products";
+    private static final String INVENTORY_API_PATH = "http://inventory-service/inventory";
 
     private final RestTemplate restTemplate;
 

@@ -1,6 +1,3 @@
-GET http://localhost:8181/api/catalog/products/sku/pp5006380337?=
+GET http://localhost:8080/api/catalog-service/catalog/products/sku/pp5006380337?=
 Accept: */*
 Cache-Control: no-cache
-
-###
-
