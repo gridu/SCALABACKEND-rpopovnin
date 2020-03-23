@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.naming.ServiceUnavailableException;
 import java.util.List;
 
 @RestController
@@ -22,7 +23,7 @@ public class ProductController {
 //    }
 
     @GetMapping("/sku/{sku}")
-    private List<ProductEntity> getAvailableProductsBySku(@PathVariable String sku) {
+    private List<ProductEntity> getAvailableProductsBySku(@PathVariable String sku) throws ServiceUnavailableException {
         return productService.getAvailableProducts(sku);
     }
 

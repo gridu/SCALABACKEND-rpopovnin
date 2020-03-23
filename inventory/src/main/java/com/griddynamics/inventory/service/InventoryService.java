@@ -18,6 +18,7 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.lang.Thread.sleep;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -49,6 +50,11 @@ public class InventoryService {
     }
 
     public List<ProductEntity> getInventoryProductDataByUniqIdList(List<String> uniqIds) {
+        try {
+            sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return uniqIds.stream()
                 .map(e -> {
                     if (inventoryProductData.containsKey(e)) {

@@ -1,4 +1,4 @@
-GET http://localhost:8383/api/products/sku/pp5006380337
+GET http://localhost:8383/products/sku/pp5006380337
 Accept: */*
 Cache-Control: no-cache
 Content-Type: application/json

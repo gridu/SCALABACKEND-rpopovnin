@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.naming.ServiceUnavailableException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -27,6 +28,7 @@ import static java.util.stream.Collectors.toMap;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductService {
+    //TODO: expose through api gateway
     private static final String CATALOG_API_PATH = "http://catalog-service/catalog/products";
     private static final String INVENTORY_API_PATH = "http://inventory-service/inventory";
 
@@ -37,12 +39,12 @@ public class ProductService {
                     @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1000"),
                     @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60")
             })
-    public List<ProductEntity> getAvailableProducts(String sku) {
+    public List<ProductEntity> getAvailableProducts(String sku) throws ServiceUnavailableException {
         ResponseEntity<ProductEntity[]> productEntityResponseEntity =
                 restTemplate.getForEntity(CATALOG_API_PATH + "/sku/{sku}", ProductEntity[].class, sku);
 
         if (productEntityResponseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("something wrong with catalog service");
+            throw new ServiceUnavailableException("something wrong with catalog service");
         }
 
         List<ProductEntity> availableProducts = Arrays.asList(productEntityResponseEntity.getBody());
@@ -57,7 +59,7 @@ public class ProductService {
                 restTemplate.postForEntity(INVENTORY_API_PATH, request, InventoryDTO[].class);
 
         if (inventoryProductEntityResponseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new RuntimeException("something wrong with inventory service");
+            throw new ServiceUnavailableException("something wrong with inventory service");
         }
 
         Map<String, Long> inventoryDataMap = Arrays.stream(inventoryProductEntityResponseEntity.getBody())

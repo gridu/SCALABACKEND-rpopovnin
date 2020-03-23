@@ -14,7 +14,6 @@
         <module>catalog</module>
         <module>inventory</module>
         <module>product</module>
-        <module>api-gateway</module>
         <module>hystrix-dashboard</module>
         <module>service-registry</module>
         <module>zipkin-server</module>
