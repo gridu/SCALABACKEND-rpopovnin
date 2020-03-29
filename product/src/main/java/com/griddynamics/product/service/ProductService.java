@@ -37,7 +37,8 @@ public class ProductService {
     @HystrixCommand(fallbackMethod = "fallbackMethodTest",
             commandProperties = {
                     @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1000"),
-                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60")
+                    @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60"),
+                    @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3")
             })
     public List<ProductEntity> getAvailableProducts(String sku) throws ServiceUnavailableException {
         ResponseEntity<ProductEntity[]> productEntityResponseEntity =
