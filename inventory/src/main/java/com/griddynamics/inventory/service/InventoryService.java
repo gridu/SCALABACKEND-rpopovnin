@@ -17,6 +17,7 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.lang.Thread.sleep;
 import static java.util.stream.Collectors.toList;
 
 @Service
@@ -48,11 +49,11 @@ public class InventoryService {
     }
 
     public List<ProductEntity> getInventoryProductDataByUniqIdList(List<String> uniqIds) {
-//        try {
-//            sleep(5000);
-//        } catch (InterruptedException ex) {
-//            log.error("error occurred while thread is sleeping", ex);
-//        }
+        try {
+            sleep(5000);
+        } catch (InterruptedException ex) {
+            log.error("error occurred while thread is sleeping", ex);
+        }
         return uniqIds.stream()
                 .filter(e -> inventoryProductData.containsKey(e))
                 .map(e -> inventoryProductData.get(e))
