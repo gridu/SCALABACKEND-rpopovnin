@@ -1,9 +1,11 @@
 package com.griddynamics.product.service;
 
 import com.griddynamics.product.dto.InventoryDTO;
-import com.griddynamics.product.expection.ServiceUnavailableException;
+import com.griddynamics.product.exception.InventoryDataNotFoundException;
+import com.griddynamics.product.exception.ServiceUnavailableException;
 import com.griddynamics.product.model.ProductEntity;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixException;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,19 +40,14 @@ public class ProductService {
             commandProperties = {
                     @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "2000"),
                     @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60"),
-                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "60000"),
+                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "30000"),
                     @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3")
-            })
+            },
+            ignoreExceptions = {InventoryDataNotFoundException.class},
+            raiseHystrixExceptions = {HystrixException.RUNTIME_EXCEPTION})
     public List<ProductEntity> getAvailableProducts(String sku) {
-        ResponseEntity<ProductEntity[]> productEntityResponseEntity;
-        try {
-            productEntityResponseEntity = restTemplate.getForEntity(CATALOG_API_PATH + "/sku/{sku}", ProductEntity[].class, sku);
-        } catch (HttpClientErrorException ex) {
-            if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new IllegalStateException("product not found");
-            }
-            throw new IllegalStateException(ex);
-        }
+        ResponseEntity<ProductEntity[]> productEntityResponseEntity =
+                restTemplate.getForEntity(CATALOG_API_PATH + "/sku/{sku}", ProductEntity[].class, sku);
 
         List<ProductEntity> availableProducts = Arrays.asList(productEntityResponseEntity.getBody());
 
@@ -65,7 +62,7 @@ public class ProductService {
             inventoryProductEntityResponseEntity = restTemplate.postForEntity(INVENTORY_API_PATH, request, InventoryDTO[].class);
         } catch (HttpClientErrorException ex) {
             if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new IllegalStateException("inventory product data not found");
+                throw new InventoryDataNotFoundException("inventory product data not found");
             }
             throw new IllegalStateException(ex);
         }

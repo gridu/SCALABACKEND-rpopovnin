@@ -4,6 +4,8 @@ import com.griddynamics.inventory.model.ProductEntity;
 import com.griddynamics.inventory.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +23,11 @@ public class InventoryController {
     @PostMapping(value = "",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
-    private List<ProductEntity> getInventoryProductDataByUniqIdList(@RequestBody List<String> uniqIds) {
-
-        return inventoryService.getInventoryProductDataByUniqIdList(uniqIds);
+    private ResponseEntity<List<ProductEntity>> getInventoryProductDataByUniqIdList(@RequestBody List<String> uniqIds) {
+        List<ProductEntity> products = inventoryService.getInventoryProductDataByUniqIdList(uniqIds);
+        return CollectionUtils.isEmpty(products)
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok(products);
 
     }
 

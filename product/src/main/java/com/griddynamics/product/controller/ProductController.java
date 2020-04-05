@@ -1,6 +1,6 @@
 package com.griddynamics.product.controller;
 
-import com.griddynamics.product.expection.ServiceUnavailableException;
+import com.griddynamics.product.exception.ServiceUnavailableException;
 import com.griddynamics.product.model.ProductEntity;
 import com.griddynamics.product.service.ProductService;
 import com.netflix.hystrix.exception.HystrixRuntimeException;
@@ -21,7 +21,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/sku/{sku}")
-    private List<ProductEntity> getAvailableProductsBySku(@PathVariable String sku) throws Exception {
+    private List<ProductEntity> getAvailableProductsBySku(@PathVariable String sku) {
         try {
             return productService.getAvailableProducts(sku);
         } catch (HystrixRuntimeException e) {

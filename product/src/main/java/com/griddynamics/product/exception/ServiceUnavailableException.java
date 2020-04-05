@@ -1,4 +1,4 @@
-package com.griddynamics.product.expection;
+package com.griddynamics.product.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
