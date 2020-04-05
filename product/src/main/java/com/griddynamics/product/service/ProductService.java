@@ -1,6 +1,7 @@
 package com.griddynamics.product.service;
 
 import com.griddynamics.product.dto.InventoryDTO;
+import com.griddynamics.product.expection.ServiceUnavailableException;
 import com.griddynamics.product.model.ProductEntity;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
@@ -12,11 +13,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.naming.ServiceUnavailableException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,16 +36,20 @@ public class ProductService {
 
     @HystrixCommand(fallbackMethod = "fallbackMethodTest",
             commandProperties = {
-                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "1000"),
+                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "2000"),
                     @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "60"),
+                    @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "60000"),
                     @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "3")
             })
-    public List<ProductEntity> getAvailableProducts(String sku) throws ServiceUnavailableException {
-        ResponseEntity<ProductEntity[]> productEntityResponseEntity =
-                restTemplate.getForEntity(CATALOG_API_PATH + "/sku/{sku}", ProductEntity[].class, sku);
-
-        if (productEntityResponseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new ServiceUnavailableException("something wrong with catalog service");
+    public List<ProductEntity> getAvailableProducts(String sku) {
+        ResponseEntity<ProductEntity[]> productEntityResponseEntity;
+        try {
+            productEntityResponseEntity = restTemplate.getForEntity(CATALOG_API_PATH + "/sku/{sku}", ProductEntity[].class, sku);
+        } catch (HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new IllegalStateException("product not found");
+            }
+            throw new IllegalStateException(ex);
         }
 
         List<ProductEntity> availableProducts = Arrays.asList(productEntityResponseEntity.getBody());
@@ -56,11 +60,14 @@ public class ProductService {
                 .map(ProductEntity::getId)
                 .collect(toList()), headers);
 
-        ResponseEntity<InventoryDTO[]> inventoryProductEntityResponseEntity =
-                restTemplate.postForEntity(INVENTORY_API_PATH, request, InventoryDTO[].class);
-
-        if (inventoryProductEntityResponseEntity.getStatusCode() != HttpStatus.OK) {
-            throw new ServiceUnavailableException("something wrong with inventory service");
+        ResponseEntity<InventoryDTO[]> inventoryProductEntityResponseEntity;
+        try {
+            inventoryProductEntityResponseEntity = restTemplate.postForEntity(INVENTORY_API_PATH, request, InventoryDTO[].class);
+        } catch (HttpClientErrorException ex) {
+            if (ex.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new IllegalStateException("inventory product data not found");
+            }
+            throw new IllegalStateException(ex);
         }
 
         Map<String, Long> inventoryDataMap = Arrays.stream(inventoryProductEntityResponseEntity.getBody())
@@ -71,11 +78,8 @@ public class ProductService {
     }
 
     private List<ProductEntity> fallbackMethodTest(String sku) {
-        log.info("fallback method was invoked with sku = {}", sku);
+        log.info("fallback method was invoked, sku = {}", sku);
 
-        ProductEntity productEntity = new ProductEntity();
-        productEntity.setSku(sku);
-
-        return Collections.singletonList(productEntity);
+        throw new ServiceUnavailableException("service unavailable");
     }
 }
