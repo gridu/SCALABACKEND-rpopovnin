@@ -28,7 +28,7 @@ import static java.util.stream.Collectors.toMap;
 @RequiredArgsConstructor
 @Slf4j
 public class ProductService {
-    //TODO: expose through api gateway
+    //TODO: refactor using api gateway
     private static final String CATALOG_API_PATH = "http://catalog-service/catalog/products";
     private static final String INVENTORY_API_PATH = "http://inventory-service/inventory";
 

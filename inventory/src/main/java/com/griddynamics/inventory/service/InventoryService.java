@@ -52,8 +52,8 @@ public class InventoryService {
     public List<ProductEntity> getInventoryProductDataByUniqIdList(List<String> uniqIds) {
         try {
             sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ex) {
+            log.error("error occurred while thread is sleeping", ex);
         }
         return uniqIds.stream()
                 .map(e -> {
